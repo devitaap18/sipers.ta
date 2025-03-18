@@ -30,7 +30,7 @@ class AuthController extends Controller
                 'admin' => redirect('/admin/dashboard'),
                 'vp'    => redirect('/vp/dashboard'),
                 'bpo'   => redirect('/bpo/dashboard'),
-                default => redirect('/dashboard'),
+                'superadmin'   => redirect('/superadmin/dashboard'),
             };
         }
     

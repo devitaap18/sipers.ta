@@ -31,6 +31,13 @@
                     <i class="fa fa-tasks"></i> Aset
                 </a>
             </li>
+
+        @elseif(Auth::user()->role === 'superadmin')
+            <li class="nav-item">
+                <a href="{{ url('/superadmin/kelola-user') }}" class="nav-link">
+                    <i class="fa fa-users"></i> Kelola User
+                </a>
+            </li>
         @endif
     </ul>
 </div>

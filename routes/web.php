@@ -16,3 +16,4 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 require __DIR__ . '/admin.php';
 require __DIR__ . '/vp.php';
 require __DIR__ . '/bpo.php';
+require __DIR__ . '/superadmin.php';
