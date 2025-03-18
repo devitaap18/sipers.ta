@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Mar 09, 2025 at 04:40 PM
+-- Generation Time: Mar 18, 2025 at 07:18 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -173,7 +173,7 @@ CREATE TABLE `users` (
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `username` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `nik` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `role` enum('admin','vp','bpo') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'admin',
+  `role` enum('admin','vp','bpo','superadmin') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'admin',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -186,7 +186,8 @@ INSERT INTO `users` (`id`, `name`, `username`, `nik`, `role`, `created_at`, `upd
 (1, 'Pak Budi', 'budiadmin', '1001', 'admin', '2025-03-05 05:43:29', '2025-03-05 05:43:29'),
 (2, 'Pak Ari', 'arivp', '1002', 'vp', '2025-03-05 05:43:29', '2025-03-05 05:43:29'),
 (3, 'Pak James', 'jamesbpo', '1003', 'bpo', '2025-03-05 05:43:29', '2025-03-05 05:43:29'),
-(4, 'Pak Lukman', 'lukmanadmin', '1004', 'admin', '2025-03-06 07:34:28', '2025-03-06 07:34:28');
+(4, 'Pak Lukman', 'lukmanadmin', '1004', 'admin', '2025-03-06 07:34:28', '2025-03-17 23:39:11'),
+(5, 'Pak Mada', 'madasuperadmin', '1111', 'superadmin', '2025-03-18 04:36:14', '2025-03-18 04:36:14');
 
 --
 -- Indexes for dumped tables
@@ -289,7 +290,7 @@ ALTER TABLE `personal_access_tokens`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Constraints for dumped tables
