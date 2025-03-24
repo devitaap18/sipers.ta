@@ -12,7 +12,7 @@ class KelolaUserController extends Controller
     // Menampilkan daftar user
     public function index()
     {
-        $users = User::all();
+        $users = User::where('role', '!=', 'superadmin')->get();
         return view('superadmin.kelola_user.index', compact('users'));
     }
 

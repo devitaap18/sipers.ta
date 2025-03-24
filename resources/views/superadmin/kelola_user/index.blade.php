@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="container">
-    <h2 class="my-4 text-center">Kelola User</h2>
+    <h2 class="my-4">Kelola User</h2>
 
     <a href="{{ route('superadmin.kelola-user.create') }}" class="btn btn-primary mb-3">Tambah User</a>
 

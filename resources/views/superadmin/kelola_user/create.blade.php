@@ -28,7 +28,10 @@
                 <option value="bpo">BPO</option>
             </select>
         </div>
-        <button type="submit" class="btn btn-success">Simpan</button>
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-success">Simpan</button>
+            <a href="{{ route('superadmin.kelola-user.index') }}" class="btn btn-secondary">Batal</a>
+        </div>
     </form>
 </div>
 @endsection
