@@ -11,253 +11,198 @@
         </div>
     @endif
 
-    <a href="{{ route('admin.pengajuan.create') }}" class="btn btn-primary mb-3">Buat Pengajuan</a>
+    <div class="row mb-3">
+        <div class="col-md-6 mb-2">
+            <a href="{{ route('admin.pengajuan.create') }}" class="btn btn-primary">Buat Pengajuan</a>
+        </div>
+        <div class="col-md-3 mb-2">
+            <select id="filter_status_vp" class="form-select">
+                <option value="">Semua Status</option>
+                <option value="pending">Pending</option>
+                <option value="disetujui">Disetujui</option>
+                <option value="ditolak">Ditolak</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <input type="text" id="search_perihal" class="form-control" placeholder="Cari perihal...">
+        </div>
+    </div>
 
     @if ($pengajuan->isEmpty())
         <div class="alert alert-warning text-center">
             <strong>Belum ada pengajuan</strong>
         </div>
     @else
-        <table class="table table-bordered custom-table">
-            <thead class="table-dark">
-                <tr>
-                    <th>#</th>
-                    <th>Nama Pengaju</th>
-                    <th>Departemen</th>
-                    <th>Tanggal Pemohon</th>
-                    <th>Perihal</th>
-                    <th>Deskripsi</th>
-                    <th>Status VP</th>
-                    <th>Catatan VP</th>
-                    <th>Status BPO</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($pengajuan as $index => $p)
-                <tr>
-                    <td>{{ $index + 1 }}</td>
-                    <td>{{ $p->user->name }}</td>
-                    <td>{{ $p->departemen }}</td>
-                    <td>{{ $p->tanggal_pemohon }}</td>
-                    <td>{{ $p->perihal }}</td>
-                    <td>{{ Str::limit($p->deskripsi, 50) }}</td>
-                    <td>
-                        @if($p->status_vp == 'pending')
-                            <span class="badge bg-warning text-dark">Pending</span>
-                        @elseif($p->status_vp == 'disetujui')
-                            <span class="badge bg-success">Disetujui</span>
-                        @else
-                            <span class="badge bg-danger">Ditolak</span>
-                        @endif
-                    </td>
-                    <td>
-                        @if ($p->deskripsi_status_vp)
-                            {{ $p->deskripsi_status_vp }}
-                        @else
-                            <span class="text-danger fst-italic">VP belum memberikan catatan</span>
-                        @endif
-                    </td>
-                    <td>
-                        @if($p->status_bpo == 'sedang diproses')
-                            <span class="badge bg-warning text-dark">Sedang diproses</span>
-                        @elseif($p->status_bpo == 'selesai')
-                            <span class="badge bg-success">Selesai</span>
-                        @else
-                            <span class="badge bg-secondary">Belum diproses</span>
-                        @endif
-                    </td>
-                    <td>
-                        <button class="btn btn-info btn-sm lihat-deskripsi" data-id="{{ $p->id }}" data-bs-toggle="modal" data-bs-target="#modalDetail">
-                            <i class="bi bi-eye"></i> Lihat Deskripsi
-                        </button>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="table table-bordered text-center" id="pengajuan_table">
+                <thead class="table-dark">
+                    <tr>
+                        <th>No.</th>
+                        <th>Nama Pengaju</th>
+                        <th>Departemen</th>
+                        <th>Tanggal Pemohon</th>
+                        <th>Perihal</th>
+                        <th>Deskripsi</th>
+                        <th>Status VP</th>
+                        <th>Catatan VP</th>
+                        <th>Status BPO</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($pengajuan as $index => $p)
+                    <tr>
+                        <td>{{ $pengajuan->firstItem() + $index }}</td>
+                        <td>{{ $p->user->name }}</td>
+                        <td>{{ $p->departemen }}</td>
+                        <td>{{ $p->tanggal_pemohon }}</td>
+                        <td class="perihal">{{ $p->perihal }}</td>
+                        <td>{{ Str::limit($p->deskripsi, 50) }}</td>
+                        <td>
+                            <span class="badge bg-{{ $p->status_vp == 'disetujui' ? 'success' : ($p->status_vp == 'pending' ? 'warning text-dark' : 'danger') }}">
+                                {{ ucfirst($p->status_vp) }}
+                            </span>
+                        </td>
+                        <td>{{ $p->deskripsi_status_vp ?: 'VP belum memberikan catatan' }}</td>
+                        <td>
+                            <span class="badge bg-{{ $p->status_bpo == 'selesai' ? 'success' : ($p->status_bpo == 'sedang diproses' ? 'warning text-dark' : 'secondary') }}">
+                                {{ ucfirst($p->status_bpo) }}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn btn-info btn-sm lihat-deskripsi" data-id="{{ $p->id }}" data-bs-toggle="modal" data-bs-target="#modalDetail">
+                                <i class="bi bi-eye"></i> Lihat
+                            </button>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        <div class="row mt-3">
+            <div class="col-md-6 d-flex align-items-center">
+                <span>Menampilkan {{ $pengajuan->firstItem() }} - {{ $pengajuan->lastItem() }} dari {{ $pengajuan->total() }} pengajuan</span>
+            </div>
+            <div class="col-md-6">
+                <nav>
+                    <ul class="pagination justify-content-end">
+                        {{-- Tombol Previous --}}
+                        <li class="page-item {{ $pengajuan->onFirstPage() ? 'disabled' : '' }}">
+                            <a class="page-link" href="{{ $pengajuan->previousPageUrl() }}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+
+                        {{-- Nomor Halaman --}}
+                        @for ($i = 1; $i <= $pengajuan->lastPage(); $i++)
+                            <li class="page-item {{ $pengajuan->currentPage() == $i ? 'active' : '' }}">
+                                <a class="page-link" href="{{ $pengajuan->url($i) }}">{{ $i }}</a>
+                            </li>
+                        @endfor
+
+                        {{-- Tombol Next --}}
+                        <li class="page-item {{ $pengajuan->hasMorePages() ? '' : 'disabled' }}">
+                            <a class="page-link" href="{{ $pengajuan->nextPageUrl() }}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
     @endif
 </div>
 
 <!-- Modal Detail Pengajuan -->
 <div class="modal fade" id="modalDetail" tabindex="-1" aria-labelledby="modalDetailLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content shadow-lg rounded">
+        <div class="modal-content">
             <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="modalDetailLabel">
-                    <i class="bi bi-file-earmark-text"></i> Detail Pengajuan Aset
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title"><i class="bi bi-file-earmark-text"></i> Detail Pengajuan</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <!-- Informasi Pengajuan -->
-                <h5 class="fw-bold mb-3 text-primary">Informasi Pengajuan</h5>
-                <div class="card shadow-sm mb-4 border-0">
-                    <div class="card-body p-3">
-                        <div class="table-responsive">
-                            <table class="table custom-table">
-                                <tbody>
-                                    <tr>
-                                        <th class="text-start">Nama Pengaju</th>
-                                        <td id="nama_pengaju"></td>
-                                    </tr>
-                                    <tr>
-                                        <th class="text-start">Departemen</th>
-                                        <td id="departemen"></td>
-                                    </tr>
-                                    <tr>
-                                        <th class="text-start">Tanggal Pemohon</th>
-                                        <td id="tanggal_pemohon"></td>
-                                    </tr>
-                                    <tr>
-                                        <th class="text-start">Perihal</th>
-                                        <td id="perihal"></td>
-                                    </tr>
-                                    <tr>
-                                        <th class="text-start">Deskripsi</th>
-                                        <td id="deskripsi"></td>
-                                    </tr>
-                                    <tr>
-                                        <th class="text-start">Status VP</th>
-                                        <td>
-                                            <span id="status_vp" class="badge"></span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th class="text-start">Catatan VP</th>
-                                        <td id="deskripsi_status_vp"></td>
-                                    </tr>
-                                    <tr>
-                                        <th class="text-start">Status BPO</th>
-                                        <td>
-                                            <span id="status_bpo" class="badge"></span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Detail Aset -->
-                <h5 class="fw-bold mb-3 text-primary">Detail Aset yang Diajukan</h5>
-                <div class="table-responsive">
-                    <table class="table table-hover table-bordered custom-table">
-                        <thead class="table-light">
-                            <tr class="text-center">
-                                <th>#</th>
-                                <th>Kategori Aset</th>
-                                <th>Nama Aset</th>
-                                <th>Jumlah</th>
-                            </tr>
-                        </thead>
-                        <tbody id="aset_list"></tbody>
-                    </table>
-                </div>
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr><th>Nama Pengaju</th><td id="nama_pengaju"></td></tr>
+                        <tr><th>Departemen</th><td id="departemen"></td></tr>
+                        <tr><th>Tanggal Pemohon</th><td id="tanggal_pemohon"></td></tr>
+                        <tr><th>Perihal</th><td id="perihal"></td></tr>
+                        <tr><th>Deskripsi</th><td id="deskripsi"></td></tr>
+                        <tr><th>Status VP</th><td><span id="status_vp" class="badge"></span></td></tr>
+                        <tr><th>Catatan VP</th><td id="deskripsi_status_vp"></td></tr>
+                        <tr><th>Status BPO</th><td><span id="status_bpo" class="badge"></span></td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 </div>
 
-
-<!-- AJAX untuk Mengambil Detail Pengajuan -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    function updateStatusBadge(status_vp) {
-        let badge = document.getElementById('status_vp');
-        
-        // Hapus kelas warna sebelumnya
-        badge.classList.remove('bg-info', 'bg-success', 'bg-warning', 'bg-danger', 'bg-secondary');
+    $(document).ready(function () {
+        // Filter berdasarkan status VP
+        $('#filter_status_vp').change(function () {
+            let filter = $(this).val().toLowerCase();
+            $('#pengajuan_table tbody tr').filter(function () {
+                $(this).toggle($(this).find('.status_vp').text().toLowerCase().indexOf(filter) > -1 || filter == "");
+            });
+        });
 
-        // Sesuaikan warna berdasarkan status
-        switch (status_vp.toLowerCase()) {
-            case 'disetujui':
-                badge.classList.add('bg-success'); // Hijau
-                badge.textContent = 'Disetujui';
-                break;
-            case 'pending':
-                badge.classList.add('bg-warning'); // Kuning
-                badge.textContent = 'Pending';
-                break;
-            case 'ditolak':
-                badge.classList.add('bg-danger'); // Merah
-                badge.textContent = 'Ditolak';
-                break;
-            default:
-                badge.classList.add('bg-secondary'); // Abu-abu untuk status tidak dikenal
-                badge.textContent = '❓ Tidak Diketahui';
-                break;
-        }
-    }
+        // Pencarian berdasarkan perihal
+        $('#search_perihal').on("keyup", function () {
+            let value = $(this).val().toLowerCase();
+            $('#pengajuan_table tbody tr').filter(function () {
+                $(this).toggle($(this).find('.perihal').text().toLowerCase().indexOf(value) > -1);
+            });
+        });
 
-    function updateStatusBadgeBPO(status_bpo) {
-        let badge = document.getElementById('status_bpo');
-        
-        // Hapus kelas warna sebelumnya
-        badge.classList.remove('bg-info', 'bg-success', 'bg-warning', 'bg-danger', 'bg-secondary');
+        // Menampilkan detail pengajuan ke dalam modal
+        $('.lihat-deskripsi').click(function () {
+            let id = $(this).data('id');
 
-        // Sesuaikan warna berdasarkan status
-        switch (status_bpo.toLowerCase()) {
-            case 'belum diproses':
-                badge.classList.add('bg-secondary'); // Hijau
-                badge.textContent = 'Belum diproses';
-                break;
-            case 'sedang diproses':
-                badge.classList.add('bg-warning'); // Kuning
-                badge.textContent = 'Sedang diproses';
-                break;
-            case 'selesai':
-                badge.classList.add('bg-success'); // Merah
-                badge.textContent = 'Selesai';
-                break;
-            default:
-                badge.classList.add('bg-secondary'); // Abu-abu untuk status tidak dikenal
-                badge.textContent = '❓ Tidak Diketahui';
-                break;
-        }
-    }
+            $.ajax({
+                url: '/admin/pengajuan/' + id, // Sesuaikan dengan route yang digunakan
+                type: 'GET',
+                success: function (data) {
+                    let pengajuan = data.pengajuan;
 
-    $(document).on("click", ".lihat-deskripsi", function () {
-        let pengajuanId = $(this).data("id");
+                    $('#nama_pengaju').text(pengajuan.user.name);
+                    $('#departemen').text(pengajuan.departemen);
+                    $('#tanggal_pemohon').text(pengajuan.tanggal_pemohon);
+                    $('#perihal').text(pengajuan.perihal);
+                    $('#deskripsi').text(pengajuan.deskripsi);
+                    $('#deskripsi_status_vp').text(pengajuan.deskripsi_status_vp || 'VP belum memberikan catatan');
 
-        $.ajax({
-            url: `/admin/pengajuan/${pengajuanId}`,
-            type: 'GET',
-            success: function(response) {
-                console.log(response); // Debugging: Cek data yang diterima
+                    // Status VP
+                    let status_vp = pengajuan.status_vp;
+                    $('#status_vp').removeClass().addClass('badge bg-' + (status_vp === 'disetujui' ? 'success' : status_vp === 'pending' ? 'warning text-dark' : 'danger')).text(status_vp.charAt(0).toUpperCase() + status_vp.slice(1));
 
-                $('#nama_pengaju').text(response.pengajuan.user.name);
-                $('#departemen').text(response.pengajuan.departemen);
-                $('#tanggal_pemohon').text(response.pengajuan.tanggal_pemohon);
-                $('#perihal').text(response.pengajuan.perihal);
-                $('#deskripsi').text(response.pengajuan.deskripsi);
-                if (!response.pengajuan.deskripsi_status_vp || response.pengajuan.deskripsi_status_vp.trim() === "") {
-                    $('#deskripsi_status_vp').html('<i class="text-danger">VP belum memberikan catatan</i>');
-                } else {
-                    $('#deskripsi_status_vp').text(response.pengajuan.deskripsi_status_vp);
+                    // Status BPO
+                    let status_bpo = pengajuan.status_bpo;
+                    $('#status_bpo').removeClass().addClass('badge bg-' + (status_bpo === 'selesai' ? 'success' : status_bpo === 'sedang diproses' ? 'warning text-dark' : 'secondary')).text(status_bpo.charAt(0).toUpperCase() + status_bpo.slice(1));
+
+                    // Detail Aset
+                    let asetHtml = '';
+                    data.aset.forEach((aset, index) => {
+                        asetHtml += `
+                            <tr>
+                                <td>${index + 1}</td>
+                                <td>${aset.kategori}</td>
+                                <td>${aset.nama}</td>
+                                <td>${aset.jumlah}</td>
+                            </tr>
+                        `;
+                    });
+
+                    $('#aset_list').html(asetHtml);
+                    $('#modalDetail').modal('show');
+                },
+                error: function () {
+                    alert('Gagal mengambil data pengajuan.');
                 }
-
-                updateStatusBadge(response.pengajuan.status_vp);
-                updateStatusBadgeBPO(response.pengajuan.status_bpo);
-
-                // Kosongkan daftar aset sebelum menambahkan yang baru
-                $('#aset_list').empty();
-
-                // Tambahkan daftar aset ke dalam modal
-                response.aset.forEach((item, index) => {
-                    $('#aset_list').append(`
-                        <tr>
-                            <td>${index + 1}</td>
-                            <td>${item.kategori}</td>
-                            <td>${item.nama}</td>
-                            <td>${item.jumlah}</td>
-                        </tr>
-                    `);
-                });
-            },
-            error: function(xhr) {
-                alert("Gagal mengambil data. Coba lagi.");
-            }
+            });
         });
     });
 </script>

@@ -13,14 +13,15 @@ use Illuminate\Support\Facades\DB;
 
 class PengajuanController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $userId = Auth::id();
+        $perPage = $request->input('perPage', 10);
 
         $pengajuan = Pengajuan::with('user')
             ->where('user_id', $userId)
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->paginate($perPage);
 
         return view('admin.pengajuan.index', compact('pengajuan'));
         
@@ -85,5 +86,4 @@ class PengajuanController extends Controller
             'aset' => $aset
         ]);
     }
-
 }

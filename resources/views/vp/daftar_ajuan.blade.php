@@ -3,7 +3,7 @@
 @section('title', 'Daftar Ajuan')
 
 @section('content')
-<div class="container mt-5">
+<div class="container mt-4">
     <h2 class="fw-bold">Daftar Ajuan</h2>
     <p>Berikut adalah daftar pengajuan yang telah diajukan.</p>
 
@@ -11,56 +11,96 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <table class="table mt-4" style="border-collapse: collapse;">
-    <thead class="table-dark">
-        <tr style="border-top: 2px solid black; border-bottom: 2px solid black;">
-            <th>No.</th>
-            <th>Perihal</th>
-            <th>Tanggal Pemohon</th>
-            <th>Status VP</th>
-            <th>Aksi</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach ($pengajuan as $index => $data)
-            <tr style="border-top: 1px solid gray; border-bottom: 1px solid gray;">
-                <td>{{ $index + 1 }}</td>
-                <td>{{ $data->perihal }}</td>
-                <td>{{ \Carbon\Carbon::parse($data->tanggal_pemohon)->format('d-m-Y') }}</td>
-                
-                <!-- Kolom Status -->
-                <td>
-                    <span class="badge bg-{{ $data->status_vp == 'pending' ? 'warning' : ($data->status_vp == 'disetujui' ? 'success' : 'danger') }}">
-                        {{ ucfirst($data->status_vp) }}
-                    </span>
-                </td>
+    <!-- Filter Status -->
+    <form method="GET" action="{{ route('vp.daftar_ajuan') }}" class="mb-3">
+        <div class="row">
+            <div class="col-md-4">
+                <select name="status_vp" class="form-select" onchange="this.form.submit()">
+                    <option value="">Semua</option>
+                    <option value="pending" {{ request('status_vp') == 'pending' ? 'selected' : '' }}>Pending</option>
+                    <option value="disetujui" {{ request('status_vp') == 'disetujui' ? 'selected' : '' }}>Disetujui</option>
+                    <option value="ditolak" {{ request('status_vp') == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
+                </select>
+            </div>
+        </div>
+    </form>
 
-                <td>
-                    <!-- Tombol Lihat Deskripsi -->
-                    <button class="btn btn-primary btn-sm lihat-deskripsi"
-                            data-id="{{ $data->id }}"
-                            data-nama="{{ $data->user->name }}"
-                            data-departemen="{{ $data->departemen }}"
-                            data-tanggal="{{ \Carbon\Carbon::parse($data->tanggal_pemohon)->format('d-m-Y') }}"
-                            data-perihal="{{ $data->perihal }}"
-                            data-deskripsi="{{ $data->deskripsi }}"
-                            data-status-vp="{{ $data->status_vp }}"
-                            data-catatanvp="{{ $data->deskripsi_status_vp }}">
-                        <i class="fas fa-info-circle"></i> Lihat Deskripsi
-                    </button>
+    <div class="table-responsive">
+        <table class="table table-striped mt-4">
+            <thead class="table-dark text-center">
+                <tr>
+                    <th>No.</th>
+                    <th>Perihal</th>
+                    <th>Tanggal Pemohon</th>
+                    <th>Status VP</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($pengajuan as $index => $data)
+                    <tr class="align-middle text-center">
+                        <td>{{ $index + 1 }}</td>
+                        <td>{{ $data->perihal }}</td>
+                        <td>{{ \Carbon\Carbon::parse($data->tanggal_pemohon)->format('d-m-Y') }}</td>
+                        <td>
+                            <span class="badge bg-{{ $data->status_vp == 'pending' ? 'warning' : ($data->status_vp == 'disetujui' ? 'success' : 'danger') }}">
+                                {{ ucfirst($data->status_vp) }}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn btn-primary btn-sm lihat-deskripsi"
+                                    data-id="{{ $data->id }}"
+                                    data-nama="{{ $data->user->name }}"
+                                    data-departemen="{{ $data->departemen }}"
+                                    data-tanggal="{{ \Carbon\Carbon::parse($data->tanggal_pemohon)->format('d-m-Y') }}"
+                                    data-perihal="{{ $data->perihal }}"
+                                    data-deskripsi="{{ $data->deskripsi }}"
+                                    data-status-vp="{{ $data->status_vp }}"
+                                    data-catatanvp="{{ $data->deskripsi_status_vp }}">
+                                <i class="fas fa-info-circle"></i> Lihat
+                            </button>
+                            <button class="btn btn-warning btn-sm ubah-status-vp"
+                                    data-id="{{ $data->id }}"
+                                    data-status-vp="{{ $data->status_vp }}">
+                                <i class="fas fa-edit"></i> Ubah
+                            </button>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+    <div class="row mt-3">
+        <div class="col-md-6 d-flex align-items-center">
+            <span>Menampilkan {{ $pengajuan->firstItem() }} - {{ $pengajuan->lastItem() }} dari {{ $pengajuan->total() }} pengajuan</span>
+        </div>
+        <div class="col-md-6">
+            <nav>
+                <ul class="pagination justify-content-end">
+                    {{-- Tombol Previous --}}
+                    <li class="page-item {{ $pengajuan->onFirstPage() ? 'disabled' : '' }}">
+                        <a class="page-link" href="{{ $pengajuan->previousPageUrl() }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
 
-                    <!-- Tombol Ubah Status -->
-                    <button class="btn btn-warning btn-sm ubah-status-vp"
-                            data-id="{{ $data->id }}"
-                            data-status-vp="{{ $data->status_vp }}">
-                        <i class="fas fa-edit"></i> Ubah Status
-                    </button>
-                </td>
-            </tr>
-        @endforeach
-    </tbody>
-</table>
+                    {{-- Nomor Halaman --}}
+                    @for ($i = 1; $i <= $pengajuan->lastPage(); $i++)
+                        <li class="page-item {{ $pengajuan->currentPage() == $i ? 'active' : '' }}">
+                            <a class="page-link" href="{{ $pengajuan->url($i) }}">{{ $i }}</a>
+                        </li>
+                    @endfor
 
+                    {{-- Tombol Next --}}
+                    <li class="page-item {{ $pengajuan->hasMorePages() ? '' : 'disabled' }}">
+                        <a class="page-link" href="{{ $pengajuan->nextPageUrl() }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
 </div>
 
 <!-- Modal Detail Pengajuan -->
@@ -151,7 +191,6 @@
 
 <!-- Script untuk Menampilkan Data ke Modal -->
 <script>
-    // Tombol lihat deskripsi
     document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.lihat-deskripsi').forEach(button => {
             button.addEventListener('click', function () {
@@ -161,41 +200,27 @@
                 document.getElementById('modalPerihal').textContent = this.getAttribute('data-perihal');
                 document.getElementById('modalDeskripsi').textContent = this.getAttribute('data-deskripsi');
                 
-                // Set warna badge status
                 let modalStatus = document.getElementById('modalStatus');
                 let status_vp = this.getAttribute('data-status-vp');
                 modalStatus.textContent = status_vp.charAt(0).toUpperCase() + status_vp.slice(1);
                 modalStatus.className = "badge bg-" + (status_vp === "pending" ? "warning" : (status_vp === "disetujui" ? "success" : "danger"));
 
-                // Menangani catatan VP
                 let catatanVP = this.getAttribute('data-catatanvp');
-                let modalCatatanVP = document.getElementById('modalCatatanvp');
-                
-                if (!catatanVP || catatanVP.trim() === "") {
-                    modalCatatanVP.innerHTML = "<span class='text-danger'>Anda belum memberikan catatan ke pengajuan ini</span>";
-                } else {
-                    modalCatatanVP.textContent = catatanVP;
-                }
-
+                document.getElementById('modalCatatanvp').textContent = catatanVP ? catatanVP : "Tidak ada catatan";
                 new bootstrap.Modal(document.getElementById('detailModal')).show();
             });
         });
-    });
 
-    document.addEventListener('DOMContentLoaded', function () {
         let selectedId = null;
-
-        // Tombol ubah status
         document.querySelectorAll('.ubah-status-vp').forEach(button => {
             button.addEventListener('click', function () {
                 selectedId = this.getAttribute('data-id');
                 document.getElementById('newStatus').value = this.getAttribute('data-status-vp');
-                document.getElementById('deskripsi_status_vp').value = ""; // Reset deskripsi status
+                document.getElementById('deskripsi_status_vp').value = "";
                 new bootstrap.Modal(document.getElementById('ubahStatusModal')).show();
             });
         });
 
-        // Konfirmasi ubah status dengan AJAX
         document.getElementById('confirmUbahStatus').addEventListener('click', function () {
             let newStatus = document.getElementById('newStatus').value;
             let deskripsi_status_vp = document.getElementById('deskripsi_status_vp').value;
@@ -211,7 +236,7 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    location.reload(); // Reload halaman setelah update status
+                    location.reload();
                 } else {
                     alert("Gagal mengubah status");
                 }

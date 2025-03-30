@@ -9,10 +9,18 @@ use Illuminate\Support\Facades\Validator;
 
 class DaftarAjuanController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Ambil semua data pengajuan dengan relasi user
-        $pengajuan = Pengajuan::with('user')->orderBy('tanggal_pemohon', 'desc')->get();
+        // Ambil parameter filter status_vp jika ada
+        $status = $request->query('status_vp');
+        
+        // Ambil semua data pengajuan dengan relasi user, filter jika status_vp ada
+        $pengajuan = Pengajuan::with('user')
+                    ->when($status, function ($query) use ($status) {
+                        return $query->where('status_vp', $status);
+                    })
+                    ->orderBy('tanggal_pemohon', 'desc')
+                    ->paginate(10); // Tambahkan pagination
 
         // Kirim data ke view
         return view('vp.daftar_ajuan', compact('pengajuan'));
