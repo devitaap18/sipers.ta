@@ -23,12 +23,26 @@ class KategoriAsetController extends Controller
 
         KategoriAset::create($request->all());
 
-        return redirect()->route('kelola_aset.index')->with('success', 'Kategori berhasil ditambahkan');
+        return redirect()->route('bpo.kelola_aset.index')->with('success', 'Kategori berhasil ditambahkan');
     }
 
     public function destroy($id)
     {
         KategoriAset::findOrFail($id)->delete();
-        return redirect()->route('kelola_aset.index')->with('success', 'Kategori berhasil dihapus');
+        return redirect()->route('bpo.kelola_aset.index')->with('success', 'Kategori berhasil dihapus');
     }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'nama' => 'required',
+            'kode' => 'required',
+        ]);
+
+        $kategori = KategoriAset::findOrFail($id);
+        $kategori->update($request->only('nama', 'kode'));
+
+        return redirect()->route('bpo.kelola_aset.index')->with('success', 'Kategori berhasil diupdate');
+    }
+
 }

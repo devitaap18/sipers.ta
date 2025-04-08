@@ -30,4 +30,20 @@ class AsetController extends Controller {
         Aset::findOrFail($id)->delete();
         return redirect()->back()->with('success', 'Aset berhasil dihapus.');
     }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'nama' => 'required',
+            'kode_aset' => 'required',
+            'kategori_id' => 'required',
+            'stok' => 'required|integer|min:1'
+        ]);
+
+        $aset = Aset::findOrFail($id);
+        $aset->update($request->only('nama', 'kode_aset', 'kategori_id', 'stok'));
+
+        return redirect()->back()->with('success', 'Aset berhasil diupdate.');
+    }
+
 }
