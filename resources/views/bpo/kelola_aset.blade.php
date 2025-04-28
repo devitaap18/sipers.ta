@@ -1,9 +1,34 @@
 @extends('layouts.app')
 
+@push('styles')
+<style>
+    /* Tambahan sedikit polish */
+    .modal-content {
+        border-radius: 0.75rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    @media (max-width: 576px) {
+        .btn {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-dialog {
+            margin: 1rem;
+        }
+
+        .table th, .table td {
+            white-space: nowrap;
+        }
+    }
+</style>
+@endpush
+
 @section('content')
 <div class="container py-4">
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
-        <h4 class="mb-3 mb-md-0">Kelola Kategori Aset & Aset</h4>
+        <h4 class="mb-3 mb-md-0 text-center text-md-start">Kelola Kategori Aset & Aset</h4>
     </div>
 
     @if(session('success'))
@@ -12,9 +37,9 @@
 
     {{-- TABLE KATEGORI --}}
     <div class="mb-5">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4 class="mb-0">Kategori Aset</h4>
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahKategoriModal" onclick="resetKategoriForm()">Tambah Kategori</button>
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-3 gap-2">
+            <h4 class="mb-2 mb-sm-0">Kategori Aset</h4>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahKategoriModal" onclick="resetKategoriForm()">+ Tambah Kategori</button>
         </div>
 
         <div class="table-responsive">
@@ -32,17 +57,19 @@
                             <td>{{ $k->nama }}</td>
                             <td>{{ $k->kode }}</td>
                             <td>
-                                <button class="btn btn-warning btn-sm editKategoriBtn"
-                                    data-id="{{ $k->id }}"
-                                    data-nama="{{ $k->nama }}"
-                                    data-kode="{{ $k->kode }}"
-                                    data-bs-toggle="modal" data-bs-target="#tambahKategoriModal">
-                                    Edit
-                                </button>
-                                <form action="{{ route('bpo.kelola_kategori.destroy', $k->id) }}" method="POST" class="d-inline">
-                                    @csrf @method('DELETE')
-                                    <button class="btn btn-danger btn-sm" onclick="return confirm('Yakin hapus kategori?')">Hapus</button>
-                                </form>
+                                <div class="d-flex flex-wrap gap-1">
+                                    <button class="btn btn-warning btn-sm editKategoriBtn"
+                                        data-id="{{ $k->id }}"
+                                        data-nama="{{ $k->nama }}"
+                                        data-kode="{{ $k->kode }}"
+                                        data-bs-toggle="modal" data-bs-target="#tambahKategoriModal">
+                                        Edit
+                                    </button>
+                                    <form action="{{ route('bpo.kelola_kategori.destroy', $k->id) }}" method="POST" class="d-inline">
+                                        @csrf @method('DELETE')
+                                        <button class="btn btn-danger btn-sm" onclick="return confirm('Yakin hapus kategori?')">Hapus</button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     @endforeach
@@ -53,9 +80,9 @@
 
     {{-- TABLE ASET --}}
     <div>
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4 class="mb-0">Aset</h4>
-            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#tambahAsetModal" onclick="resetAsetForm()">Tambah Aset</button>
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-3 gap-2">
+            <h4 class="mb-2 mb-sm-0">Aset</h4>
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#tambahAsetModal" onclick="resetAsetForm()">+ Tambah Aset</button>
         </div>
 
         <div class="table-responsive">
@@ -77,19 +104,21 @@
                             <td>{{ $a->kategori->nama }}</td>
                             <td>{{ $a->stok }}</td>
                             <td>
-                                <button class="btn btn-warning btn-sm editAsetBtn"
-                                    data-id="{{ $a->id }}"
-                                    data-nama="{{ $a->nama }}"
-                                    data-kode_aset="{{ $a->kode_aset }}"
-                                    data-kategori_id="{{ $a->kategori_id }}"
-                                    data-stok="{{ $a->stok }}"
-                                    data-bs-toggle="modal" data-bs-target="#tambahAsetModal">
-                                    Edit
-                                </button>
-                                <form action="{{ route('bpo.kelola_aset.destroy', $a->id) }}" method="POST" class="d-inline">
-                                    @csrf @method('DELETE')
-                                    <button class="btn btn-danger btn-sm" onclick="return confirm('Yakin hapus aset?')">Hapus</button>
-                                </form>
+                                <div class="d-flex flex-wrap gap-1">
+                                    <button class="btn btn-warning btn-sm editAsetBtn"
+                                        data-id="{{ $a->id }}"
+                                        data-nama="{{ $a->nama }}"
+                                        data-kode_aset="{{ $a->kode_aset }}"
+                                        data-kategori_id="{{ $a->kategori_id }}"
+                                        data-stok="{{ $a->stok }}"
+                                        data-bs-toggle="modal" data-bs-target="#tambahAsetModal">
+                                        Edit
+                                    </button>
+                                    <form action="{{ route('bpo.kelola_aset.destroy', $a->id) }}" method="POST" class="d-inline">
+                                        @csrf @method('DELETE')
+                                        <button class="btn btn-danger btn-sm" onclick="return confirm('Yakin hapus aset?')">Hapus</button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     @endforeach

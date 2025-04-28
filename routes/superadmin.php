@@ -2,16 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Superadmin\DashboardController;
-use App\Http\Controllers\Superadmin\KelolaUserController;
+use App\Http\Controllers\Superadmin\RoleController;
+use App\Http\Controllers\Superadmin\MenuController;
 
-Route::middleware(['auth', 'role:superadmin'])->group(function () {
-    Route::get('/superadmin/dashboard', [DashboardController::class, 'index'])->name('superadmin.dashboard');
-    Route::resource('/superadmin/kelola-user', KelolaUserController::class)->names([
-        'index'   => 'superadmin.kelola-user.index',
-        'create'  => 'superadmin.kelola-user.create',
-        'store'   => 'superadmin.kelola-user.store',
-        'edit'    => 'superadmin.kelola-user.edit',
-        'update'  => 'superadmin.kelola-user.update',
-        'destroy' => 'superadmin.kelola-user.destroy',
-    ]);
+Route::middleware(['auth', 'role:superadmin'])->prefix('superadmin')->name('superadmin.')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::resource('role', RoleController::class)->except(['create', 'edit', 'show']);
+    Route::resource('menu', MenuController::class)->except(['create', 'edit', 'show']);
+    Route::resource('user', \App\Http\Controllers\Superadmin\UserController::class);
 });

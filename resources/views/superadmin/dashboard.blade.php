@@ -3,61 +3,89 @@
 @section('title', 'Dashboard Superadmin')
 
 @section('content')
-<div class="container mt-5">
+<div class="container">
     <h2 class="mb-4">Dashboard Superadmin</h2>
     <p>Selamat datang, <strong>{{ Auth::user()->name }}</strong></p>
+</div>
 
-    <div class="row mt-4">
-        <style>
-            .card-hover:hover {
-                transform: scale(1.03);
-                transition: transform 0.2s ease-in-out;
-            }
-        </style>
-
-        <!-- Total Admins -->
-        <div class="col-md-4">
-            <a href="{{ route('superadmin.kelola-user.index') }}" class="text-decoration-none">
-                <div class="card text-white bg-success mb-3 shadow-lg card-hover">
-                    <div class="card-body d-flex align-items-center">
-                        <i class="bi bi-person-badge fs-1 me-3"></i>
-                        <div>
-                            <h5 class="card-title">Total Admin</h5>
-                            <p class="card-text fs-3">{{ $totalAdmins }}</p>
+<div class="container-fluid">
+    <div class="row">
+        <!-- Statistik Users -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card card-stats">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-5">
+                            <div class="icon-big text-center icon-warning">
+                                <i class="fa fa-users text-info"></i>
+                            </div>
+                        </div>
+                        <div class="col-7">
+                            <div class="numbers">
+                                <p class="card-category">Users</p>
+                                <h4 class="card-title">{{ $totalUsers }}</h4>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </a>
+                <div class="card-footer">
+                    <div class="stats">
+                        Total Users
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- Total VP -->
-        <div class="col-md-4">
-            <a href="{{ route('superadmin.kelola-user.index') }}" class="text-decoration-none">
-                <div class="card text-white bg-warning mb-3 shadow-lg card-hover">
-                    <div class="card-body d-flex align-items-center">
-                        <i class="bi bi-award fs-1 me-3"></i>
-                        <div>
-                            <h5 class="card-title">Total VP</h5>
-                            <p class="card-text fs-3">{{ $totalVps }}</p>
+        <!-- Statistik Roles -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card card-stats">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-5">
+                            <div class="icon-big text-center icon-warning">
+                                <i class="fa fa-user-shield text-warning"></i>
+                            </div>
+                        </div>
+                        <div class="col-7">
+                            <div class="numbers">
+                                <p class="card-category">Roles</p>
+                                <h4 class="card-title">{{ $totalRoles }}</h4>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </a>
+                <div class="card-footer">
+                    <div class="stats">
+                        Total Roles
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- Total BPO -->
-        <div class="col-md-4">
-            <a href="{{ route('superadmin.kelola-user.index') }}" class="text-decoration-none">
-                <div class="card text-white bg-danger mb-3 shadow-lg card-hover">
-                    <div class="card-body d-flex align-items-center">
-                        <i class="bi bi-briefcase fs-1 me-3"></i>
-                        <div>
-                            <h5 class="card-title">Total BPO</h5>
-                            <p class="card-text fs-3">{{ $totalBpos }}</p>
+        <!-- Statistik Menus -->
+        <div class="col-lg-4 col-md-6">
+            <div class="card card-stats">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-5">
+                            <div class="icon-big text-center icon-warning">
+                                <i class="fa fa-bars text-danger"></i>
+                            </div>
+                        </div>
+                        <div class="col-7">
+                            <div class="numbers">
+                                <p class="card-category">Menus</p>
+                                <h4 class="card-title">{{ $totalMenus }}</h4>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </a>
+                <div class="card-footer">
+                    <div class="stats">
+                        Total Menu
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

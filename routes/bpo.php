@@ -11,8 +11,10 @@ Route::middleware(['auth', 'role:bpo'])->prefix('bpo')->name('bpo.')->group(func
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Kategori Aset
-    Route::resource('/kelola_kategori', KategoriAsetController::class)->except(['show']);
+    Route::get('/kelola_kategori', [KategoriAsetController::class, 'index'])->name('kelola_kategori.index');
+    Route::post('/kelola_kategori', [KategoriAsetController::class, 'store'])->name('kelola_kategori.store');
     Route::post('/kelola_kategori/update/{id}', [KategoriAsetController::class, 'update'])->name('kelola_kategori.update');
+    Route::delete('/kelola_kategori/{id}', [KategoriAsetController::class, 'destroy'])->name('kelola_kategori.destroy');
 
     // Aset
     Route::get('/kelola_aset', [AsetController::class, 'index'])->name('kelola_aset.index');

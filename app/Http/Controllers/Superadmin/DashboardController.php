@@ -2,25 +2,22 @@
 
 namespace App\Http\Controllers\Superadmin;
 
-use App\Http\Controllers\Controller;
+use App\Models\MsUser;
+use App\Models\MsRole;
+use App\Models\MsMenu;
 use Illuminate\Http\Request;
-use App\Models\User;
+use App\Http\Controllers\Controller;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        // Hitung jumlah pengguna berdasarkan role
-        $totalUsers = User::count();
-        $totalAdmins = User::where('role', 'admin')->count();
-        $totalVps = User::where('role', 'vp')->count();
-        $totalBpos = User::where('role', 'bpo')->count();
+        // Mengambil data statistik
+        $totalUsers = MsUser::count();
+        $totalRoles = MsRole::count();
+        $totalMenus = MsMenu::count();
 
-        return view('superadmin.dashboard', [
-            'totalUsers' => $totalUsers,
-            'totalAdmins' => $totalAdmins,
-            'totalVps' => $totalVps,
-            'totalBpos' => $totalBpos,
-        ]);
+        // Mengirim data ke view
+        return view('superadmin.dashboard', compact('totalUsers', 'totalRoles', 'totalMenus'));
     }
 }

@@ -59,7 +59,7 @@
                         <td class="perihal">{{ $p->perihal }}</td>
                         <td>{{ Str::limit($p->deskripsi, 50) }}</td>
                         <td>
-                            <span class="badge bg-{{ $p->status_vp == 'disetujui' ? 'success' : ($p->status_vp == 'pending' ? 'warning text-dark' : 'danger') }}">
+                            <span class="status_vp badge bg-{{ $p->status_vp == 'disetujui' ? 'success' : ($p->status_vp == 'pending' ? 'warning text-dark' : 'danger') }}">
                                 {{ ucfirst($p->status_vp) }}
                             </span>
                         </td>

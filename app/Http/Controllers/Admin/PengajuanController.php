@@ -10,6 +10,7 @@ use App\Models\Pengajuan;
 use App\Models\PengajuanAset;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Models\MsUser;
 
 class PengajuanController extends Controller
 {

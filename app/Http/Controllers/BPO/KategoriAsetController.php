@@ -44,5 +44,4 @@ class KategoriAsetController extends Controller
 
         return redirect()->route('bpo.kelola_aset.index')->with('success', 'Kategori berhasil diupdate');
     }
-
 }
