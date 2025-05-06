@@ -4,101 +4,94 @@
 
 @section('content')
 <div class="container mt-4">
-    <h2 class="fw-bold">Daftar Ajuan</h2>
-    <p>Berikut adalah daftar pengajuan yang telah diajukan.</p>
+    <div class="card shadow rounded-4 border-0">
+        <div class="card-body">
+            <h2 class="fw-semibold mb-2"><i class="fas fa-list-alt me-2"></i>Daftar Ajuan</h2>
+            <p class="text-muted">Berikut adalah daftar pengajuan yang telah diajukan oleh pemohon.</p>
 
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
+            @if(session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
 
-    <!-- Filter Status -->
-    <form method="GET" action="{{ route('vp.daftar_ajuan') }}" class="mb-3">
-        <div class="row">
-            <div class="col-md-4">
-                <select name="status_vp" class="form-select" onchange="this.form.submit()">
-                    <option value="">Semua</option>
-                    <option value="pending" {{ request('status_vp') == 'pending' ? 'selected' : '' }}>Pending</option>
-                    <option value="disetujui" {{ request('status_vp') == 'disetujui' ? 'selected' : '' }}>Disetujui</option>
-                    <option value="ditolak" {{ request('status_vp') == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
-                </select>
+            <!-- Filter Status -->
+            <form method="GET" action="{{ route('vp.daftar_ajuan') }}" class="row g-3 align-items-center mb-4">
+                <div class="col-auto">
+                    <label for="status_vp" class="col-form-label">Filter Status</label>
+                </div>
+                <div class="col-md-4">
+                    <select name="status_vp" id="status_vp" class="form-select" onchange="this.form.submit()">
+                        <option value="">Semua</option>
+                        <option value="pending" {{ request('status_vp') == 'pending' ? 'selected' : '' }}>⏳ Pending</option>
+                        <option value="disetujui" {{ request('status_vp') == 'disetujui' ? 'selected' : '' }}>✅ Disetujui</option>
+                        <option value="ditolak" {{ request('status_vp') == 'ditolak' ? 'selected' : '' }}>❌ Ditolak</option>
+                    </select>
+                </div>
+            </form>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light text-center">
+                        <tr>
+                            <th>No.</th>
+                            <th>Perihal</th>
+                            <th>Tanggal Pemohon</th>
+                            <th>Status VP</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($pengajuan as $index => $data)
+                            <tr class="text-center">
+                                <td>{{ $pengajuan->firstItem() + $index }}</td>
+                                <td class="text-start">{{ $data->perihal }}</td>
+                                <td>{{ \Carbon\Carbon::parse($data->tanggal_pemohon)->format('d M Y') }}</td>
+                                <td>
+                                    <span class="badge rounded-pill bg-{{ $data->status_vp == 'pending' ? 'warning text-dark' : ($data->status_vp == 'disetujui' ? 'success' : 'danger') }}">
+                                        {{ ucfirst($data->status_vp) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <button class="btn btn-outline-primary btn-sm lihat-deskripsi"
+                                                data-id="{{ $data->id }}"
+                                                data-nama="{{ $data->user->name }}"
+                                                data-departemen="{{ $data->departemen }}"
+                                                data-tanggal="{{ \Carbon\Carbon::parse($data->tanggal_pemohon)->format('d-m-Y') }}"
+                                                data-perihal="{{ $data->perihal }}"
+                                                data-deskripsi="{{ $data->deskripsi }}"
+                                                data-status-vp="{{ $data->status_vp }}"
+                                                data-catatanvp="{{ $data->deskripsi_status_vp }}">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-outline-warning btn-sm ubah-status-vp"
+                                                data-id="{{ $data->id }}"
+                                                data-status-vp="{{ $data->status_vp }}">
+                                            <i class="fas fa-pencil-alt"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">Tidak ada pengajuan.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
-        </div>
-    </form>
 
-    <div class="table-responsive">
-        <table class="table table-striped mt-4">
-            <thead class="table-dark text-center">
-                <tr>
-                    <th>No.</th>
-                    <th>Perihal</th>
-                    <th>Tanggal Pemohon</th>
-                    <th>Status VP</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($pengajuan as $index => $data)
-                    <tr class="align-middle text-center">
-                        <td>{{ $index + 1 }}</td>
-                        <td>{{ $data->perihal }}</td>
-                        <td>{{ \Carbon\Carbon::parse($data->tanggal_pemohon)->format('d-m-Y') }}</td>
-                        <td>
-                            <span class="badge bg-{{ $data->status_vp == 'pending' ? 'warning' : ($data->status_vp == 'disetujui' ? 'success' : 'danger') }}">
-                                {{ ucfirst($data->status_vp) }}
-                            </span>
-                        </td>
-                        <td>
-                            <button class="btn btn-primary btn-sm lihat-deskripsi"
-                                    data-id="{{ $data->id }}"
-                                    data-nama="{{ $data->user->name }}"
-                                    data-departemen="{{ $data->departemen }}"
-                                    data-tanggal="{{ \Carbon\Carbon::parse($data->tanggal_pemohon)->format('d-m-Y') }}"
-                                    data-perihal="{{ $data->perihal }}"
-                                    data-deskripsi="{{ $data->deskripsi }}"
-                                    data-status-vp="{{ $data->status_vp }}"
-                                    data-catatanvp="{{ $data->deskripsi_status_vp }}">
-                                <i class="fas fa-info-circle"></i> Lihat
-                            </button>
-                            <button class="btn btn-warning btn-sm ubah-status-vp"
-                                    data-id="{{ $data->id }}"
-                                    data-status-vp="{{ $data->status_vp }}">
-                                <i class="fas fa-edit"></i> Ubah
-                            </button>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-    <div class="row mt-3">
-        <div class="col-md-6 d-flex align-items-center">
-            <span>Menampilkan {{ $pengajuan->firstItem() }} - {{ $pengajuan->lastItem() }} dari {{ $pengajuan->total() }} pengajuan</span>
-        </div>
-        <div class="col-md-6">
-            <nav>
-                <ul class="pagination justify-content-end">
-                    {{-- Tombol Previous --}}
-                    <li class="page-item {{ $pengajuan->onFirstPage() ? 'disabled' : '' }}">
-                        <a class="page-link" href="{{ $pengajuan->previousPageUrl() }}" aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                        </a>
-                    </li>
-
-                    {{-- Nomor Halaman --}}
-                    @for ($i = 1; $i <= $pengajuan->lastPage(); $i++)
-                        <li class="page-item {{ $pengajuan->currentPage() == $i ? 'active' : '' }}">
-                            <a class="page-link" href="{{ $pengajuan->url($i) }}">{{ $i }}</a>
-                        </li>
-                    @endfor
-
-                    {{-- Tombol Next --}}
-                    <li class="page-item {{ $pengajuan->hasMorePages() ? '' : 'disabled' }}">
-                        <a class="page-link" href="{{ $pengajuan->nextPageUrl() }}" aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
+            <!-- Pagination dan info -->
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <small class="text-muted">Menampilkan {{ $pengajuan->firstItem() }} - {{ $pengajuan->lastItem() }} dari {{ $pengajuan->total() }} data</small>
+                </div>
+                <div class="col-md-6 d-flex justify-content-end">
+                    {{ $pengajuan->links() }}
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -188,6 +181,12 @@
         </div>
     </div>
 </div>
+
+<style>
+    .table-hover tbody tr:hover {
+        background-color: #f1f3f5;
+    }
+</style>
 
 <!-- Script untuk Menampilkan Data ke Modal -->
 <script>
