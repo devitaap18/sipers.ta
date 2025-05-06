@@ -4,17 +4,79 @@ namespace App\Http\Controllers\VP;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Pengajuan;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Hitung jumlah pengajuan berdasarkan status untuk user yang login
-        $pendingCount = Pengajuan::where('status_vp', 'pending')->count();
-        $approvedCount = Pengajuan::where('status_vp', 'disetujui')->count();
-        $rejectedCount = Pengajuan::where('status_vp', 'ditolak')->count();
+        $tahun = $request->input('tahun', date('Y'));
 
-        return view('vp.dashboard', compact('pendingCount', 'approvedCount', 'rejectedCount'));
+        // Hitung jumlah pengajuan berdasarkan status di tahun tertentu
+        $pendingCount = Pengajuan::where('status_vp', 'pending')
+            ->whereYear('created_at', $tahun)
+            ->count();
+
+        $approvedCount = Pengajuan::where('status_vp', 'disetujui')
+            ->whereYear('created_at', $tahun)
+            ->count();
+
+        $rejectedCount = Pengajuan::where('status_vp', 'ditolak')
+            ->whereYear('created_at', $tahun)
+            ->count();
+
+        // Hitung jumlah pengajuan berdasarkan status per bulan, difilter berdasarkan tahun
+        $monthlyDataPending = Pengajuan::where('status_vp', 'pending')
+            ->whereYear('created_at', $tahun)
+            ->selectRaw('MONTH(created_at) as month, COUNT(*) as count')
+            ->groupBy('month')
+            ->orderBy('month')
+            ->pluck('count', 'month')
+            ->toArray();
+
+        $monthlyDataApproved = Pengajuan::where('status_vp', 'disetujui')
+            ->whereYear('created_at', $tahun)
+            ->selectRaw('MONTH(created_at) as month, COUNT(*) as count')
+            ->groupBy('month')
+            ->orderBy('month')
+            ->pluck('count', 'month')
+            ->toArray();
+
+        $monthlyDataRejected = Pengajuan::where('status_vp', 'ditolak')
+            ->whereYear('created_at', $tahun)
+            ->selectRaw('MONTH(created_at) as month, COUNT(*) as count')
+            ->groupBy('month')
+            ->orderBy('month')
+            ->pluck('count', 'month')
+            ->toArray();
+
+        // Tambahkan 0 untuk bulan yang tidak ada data
+        for ($i = 1; $i <= 12; $i++) {
+            if (!array_key_exists($i, $monthlyDataPending)) {
+                $monthlyDataPending[$i] = 0;
+            }
+            if (!array_key_exists($i, $monthlyDataApproved)) {
+                $monthlyDataApproved[$i] = 0;
+            }
+            if (!array_key_exists($i, $monthlyDataRejected)) {
+                $monthlyDataRejected[$i] = 0;
+            }
+        }
+
+        // Urutkan berdasarkan bulan
+        ksort($monthlyDataPending);
+        ksort($monthlyDataApproved);
+        ksort($monthlyDataRejected);
+
+        return view('vp.dashboard', compact(
+            'pendingCount',
+            'approvedCount',
+            'rejectedCount',
+            'monthlyDataPending',
+            'monthlyDataApproved',
+            'monthlyDataRejected',
+            'tahun'
+        ));
     }
 }

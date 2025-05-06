@@ -146,16 +146,16 @@
 
         <!-- Logo -->
         <div class="d-none d-md-flex logo-group">
-            <img src="https://jadibumn.id/wp-content/uploads/2024/02/Screenshot-2024-02-01-121658.png" alt="BUMN">
-            <img src="https://pindad.com/uploads/images/content/full/logo_AKHLAK.jpg" alt="AKHLAK">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/d/da/Logo_Pupuk_Indonesia_%28Persero%29.png" alt="PUPUK INDONESIA">
-            <img src="https://storage.googleapis.com/pkg-portal-bucket/images/template/logo-PG-agro-trans-small.png" alt="PETROKIMIA GRESIK">
+            <img src="{{ asset('images/logo_bumn.png') }}" alt="BUMN">
+            <img src="{{ asset('images/logo_AKHLAK.jpg') }}" alt="AKHLAK">
+            <img src="{{ asset('images/Logo_Pupuk_Indonesia.png') }}" alt="PUPUK INDONESIA">
+            <img src="{{ asset('images/logo_PG.png') }}" alt="PETROKIMIA GRESIK">
         </div>
 
         <!-- User Dropdown -->
         <div class="dropdown">
             <div class="user-dropdown" data-bs-toggle="dropdown">
-                <img src="https://cdn-icons-png.flaticon.com/512/9187/9187604.png" alt="User">
+                <img src="{{ asset('images/icon_user.png') }}" alt="User">
                 <span class="d-none d-md-inline">{{ Auth::user()->name ?? 'User' }}</span>
                 <i class="fa fa-chevron-down"></i>
             </div>
