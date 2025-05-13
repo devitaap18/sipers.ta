@@ -32,6 +32,25 @@ class PengajuanController extends Controller
         return redirect()->route('bpo.pengajuan.index')->with('success', 'Status BPO diperbarui!');
     }
 
+    // Mengunggah file PDF untuk pengajuan tertentu
+    public function uploadPdf(Request $request, $id)
+    {
+        $request->validate([
+            'file_pdf' => 'required|mimes:pdf|max:2048',
+        ]);
+
+        $pengajuan = Pengajuan::findOrFail($id);
+
+        // Simpan file ke storage/app/public/pdf_pengajuan/
+        $path = $request->file('file_pdf')->store('pdf_pengajuan', 'public');
+
+        // Update kolom file_pdf
+        $pengajuan->file_pdf = $path;
+        $pengajuan->save();
+
+        return redirect()->route('bpo.pengajuan.index')->with('success', 'File PDF berhasil diunggah.');
+    }
+
     // Fungsi untuk mengurangi stok aset berdasarkan pengajuan yang disetujui
     private function kurangiStok(Pengajuan $pengajuan)
     {

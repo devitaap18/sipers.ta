@@ -21,6 +21,7 @@ class Pengajuan extends Model
         'status_vp',
         'deskripsi_status_vp',
         'status_bpo',
+        'file_pdf',
         'created_at',
         'updated_at'
     ];

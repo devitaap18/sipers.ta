@@ -25,4 +25,5 @@ Route::middleware(['auth', 'role:bpo'])->prefix('bpo')->name('bpo.')->group(func
     // Pengajuan
     Route::get('/pengajuan', [PengajuanController::class, 'index'])->name('pengajuan.index');
     Route::post('/pengajuan/{id}/update-status', [PengajuanController::class, 'updateStatus'])->name('pengajuan.update-status');
+    Route::post('/pengajuan/{id}/upload-pdf', [PengajuanController::class, 'uploadPdf'])->name('pengajuan.upload-pdf');
 });

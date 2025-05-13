@@ -115,6 +115,7 @@
                         <tr><th>Status VP</th><td><span id="status_vp" class="badge"></span></td></tr>
                         <tr><th>Catatan VP</th><td id="deskripsi_status_vp"></td></tr>
                         <tr><th>Status BPO</th><td><span id="status_bpo" class="badge"></span></td></tr>
+                        <tr><th>File PDF</th><td id="file_pdf"></td></tr>
                     </tbody>
                 </table>
             </div>
@@ -154,6 +155,16 @@ $(function () {
             $('#deskripsi_status_vp').text(pengajuan.deskripsi_status_vp || 'VP belum memberikan catatan');
             $('#status_vp').removeClass().addClass('badge bg-' + (pengajuan.status_vp === 'disetujui' ? 'success' : pengajuan.status_vp === 'pending' ? 'warning text-dark' : 'danger')).text(pengajuan.status_vp);
             $('#status_bpo').removeClass().addClass('badge bg-' + (pengajuan.status_bpo === 'selesai' ? 'success' : pengajuan.status_bpo === 'sedang diproses' ? 'warning text-dark' : 'secondary')).text(pengajuan.status_bpo);
+            const fileUrl = pengajuan.file_pdf 
+                ? `/storage/${pengajuan.file_pdf}` 
+                : null;
+
+            if (fileUrl) {
+                $('#file_pdf').html(`<a href="${fileUrl}" target="_blank" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-file-earmark-pdf me-1"></i> Lihat PDF</a>`);
+            } else {
+                $('#file_pdf').text('-');
+            }
         }).fail(() => alert('Gagal memuat data.'));
     });
 });

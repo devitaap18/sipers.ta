@@ -23,6 +23,7 @@
                     <th>Perihal</th>
                     <th>Status BPO</th>
                     <th>Aksi</th>
+                    <th>Upload PDF</th> {{-- Tambahan --}}
                 </tr>
             </thead>
             <tbody>
@@ -50,6 +51,16 @@
                                 <option value="selesai" {{ $p->status_bpo == 'selesai' ? 'selected' : '' }}>Selesai</option>
                             </select>
                             <button type="submit" class="btn btn-primary btn-sm">Update</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form action="{{ route('bpo.pengajuan.upload-pdf', $p->id) }}" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            <input type="file" name="file_pdf" accept="application/pdf" class="form-control form-control-sm mb-1" required>
+                            <button type="submit" class="btn btn-success btn-sm">Upload</button>
+                            @if ($p->file_pdf)
+                                <a href="{{ asset('storage/' . $p->file_pdf) }}" target="_blank" class="btn btn-outline-secondary btn-sm mt-1">Lihat</a>
+                            @endif
                         </form>
                     </td>
                 </tr>

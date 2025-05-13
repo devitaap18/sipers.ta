@@ -56,6 +56,7 @@ class PengajuanController extends Controller
                 'status_vp' => 'pending',
                 'deskripsi_status_vp' => null,
                 'status_bpo' => 'belum diproses',
+                'file_pdf' => null
             ]);
 
             foreach ($request->aset_id as $aset_id) {
