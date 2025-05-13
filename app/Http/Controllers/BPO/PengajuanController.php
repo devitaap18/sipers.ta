@@ -41,10 +41,15 @@ class PengajuanController extends Controller
 
         $pengajuan = Pengajuan::findOrFail($id);
 
-        // Simpan file ke storage/app/public/pdf_pengajuan/
-        $path = $request->file('file_pdf')->store('pdf_pengajuan', 'public');
+        $file = $request->file('file_pdf');
 
-        // Update kolom file_pdf
+        // Ambil nama asli file dan tambahkan timestamp agar unik
+        $filename = time() . '_' . $file->getClientOriginalName();
+
+        // Simpan file ke folder 'public/pdf_pengajuan' dengan nama baru
+        $path = $file->storeAs('pdf_pengajuan', $filename, 'public');
+
+        // Simpan path file ke kolom file_pdf
         $pengajuan->file_pdf = $path;
         $pengajuan->save();
 
